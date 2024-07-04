@@ -3,6 +3,7 @@
 import { gql, useQuery } from '@apollo/client'
 
 import { Book } from '@/__generated__/graphql'
+import { ENV } from '@/libs'
 
 export default function AppPage() {
   return (
@@ -28,9 +29,11 @@ const BookList = () => {
     }
   `
 
-  const { data, loading } = useQuery(GET_ALL_BOOK)
+  const { data, loading, error } = useQuery(GET_ALL_BOOK, { context: { headers: { Authorization: ENV.NEXT_PUBLIC_GRAPHQL_TOKEN } } })
 
   if (loading) return <LoadingIndicator />
+
+  if (error) return <p className='text-center'>Something went wrong</p>
 
   const books: Book[] = data?.books
 
