@@ -1,16 +1,13 @@
 'use client'
 
-import { Suspense } from 'react'
-import { gql, useSuspenseQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 
 import { Book } from '@/__generated__/graphql'
 
 export default function AppPage() {
   return (
     <main className='min-h-screen flex flex-col p-24 gap-6'>
-      <Suspense fallback={<LoadingIndicator />}>
-        <BookList />
-      </Suspense>
+      <BookList />
     </main>
   )
 }
@@ -31,9 +28,13 @@ const BookList = () => {
     }
   `
 
-  const { data }: { data: { books: Book[] } } = useSuspenseQuery(GET_ALL_BOOK)
+  const { data, loading } = useQuery(GET_ALL_BOOK)
 
-  return data.books.map(({ id, title, author, category, total, publishedAt }) => (
+  if (loading) return <LoadingIndicator />
+
+  const books: Book[] = data?.books
+
+  return books.map(({ id, title, author, category, total, publishedAt }) => (
     <div key={id} className='flex flex-col gap-3 bg-gray-100 shadow p-6 rounded'>
       <h3>Title : {title}</h3>
       <p>Author : {author}</p>
